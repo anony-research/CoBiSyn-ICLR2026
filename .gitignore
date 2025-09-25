@@ -5,3 +5,5 @@ results/
 *.ipynb
 train_retro_two_stage.py
 *.tar.gz
+extract_retro_data.py
+preprocess_retro_data.py
