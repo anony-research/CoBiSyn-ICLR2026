@@ -11,7 +11,7 @@ while coordinating these two directions through shared frontier information.
 
 ### Data Preparation
 
-Download the relvent data and pre-trained models from [here]() and put them in current directory. 
+Download the relvent data and pre-trained models from [here](https://huggingface.co/CoBiSyn/CoBiSyn/tree/main) and put them in current directory. 
 
 The files are organized as follows:
 ```
@@ -69,3 +69,16 @@ print(route.success_route())    # identified route
 ```
 
 If you want to perform on your own building blocks, you first need to create the corresponding FAISS index using `scripts/build_fp_index.py` and `scripts/build_emb_index.py`, then repeat the above process.
+
+### Single-Step Retrosynthesis
+
+As describled in our paper, the retrosynthesis model used in CoBiSyn is first pre-trained on a large amount of USPTO reaction data (`dataset/raw_data/reactions-train.json.gz`), and then fine-tuned on the extracted triplets with conditional signals (`dataset/raw_data/retro-train-dataset.json`). If you would like to use our pre-trained model as a single-step retrosynthesis model, please proceed as follows: 
+```python
+from CoBiSyn.model.retro import RetroModel
+from CoBiSyn.chem.mol import Molecule
+
+model = RetroModel.load_from_checkpoint('checkpoints/pretrain.ckpt', mode='pretrain', map_loaction='cuda:0', strict=False)
+
+mol = Molecule('SMILES of molecule', device=model.device)
+model.predict_no_cond(mol)  # return top_k_scores and top_k_indices
+```
